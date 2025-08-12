@@ -51,7 +51,12 @@ const PopoverArrow = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <PopoverPrimitive.Arrow
     ref={ref}
-    className={cn("fill-popover", className)}
+    width={12}
+    height={6}
+    className={cn(
+      "fill-popover stroke-border",
+      className
+    )}
     {...props}
   />
 ))

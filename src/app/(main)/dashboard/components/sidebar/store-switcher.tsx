@@ -54,10 +54,7 @@ export function StoreSwitcher({
                 side="right"
                 sideOffset={8}
             >
-                {/* Bubble Arrow */}
-                <PopoverArrow className="fill-popover" />
-                
-                {/* Store Search & List */}
+                <PopoverArrow />
                 <Command>
                     <CommandInput placeholder="Search store..." />
                     <CommandList>
