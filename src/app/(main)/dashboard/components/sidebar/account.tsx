@@ -34,7 +34,7 @@ export function Account({ user }: { user?: User | null }) {
 
   const [sessionUser, setSessionUser] = useState<User>(user || defaultUser);
 
-  console.log("sessionUser", sessionUser);
+  // console.log("sessionUser", sessionUser);
   // Ensure we always have a valid user object
   const currentUser = user || defaultUser;
 

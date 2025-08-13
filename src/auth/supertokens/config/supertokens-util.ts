@@ -4,6 +4,7 @@ import jwksClient from "jwks-rsa";
 import { SuperTokensConfig } from "./supertokens-config";
 import { cookies } from "next/headers";
 
+
 const client = jwksClient({
     jwksUri: `${SuperTokensConfig.appInfo.apiDomain}${SuperTokensConfig.appInfo.apiBasePath}jwt/jwks.json`,
 });
@@ -54,6 +55,7 @@ export async function getSessionForSSR(): Promise<{
     }
 }
 
+// for server side use
 export async function getSessionUser() {
     const { accessTokenPayload } = await getSessionForSSR();
     // console.log(`session user ${JSON.stringify(accessTokenPayload?.user)}`);

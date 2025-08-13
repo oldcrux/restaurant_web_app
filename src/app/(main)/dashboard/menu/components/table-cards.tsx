@@ -29,7 +29,7 @@ export function TableCards() {
   const fetchMenus = async () => {
     try {
       setIsLoading(true);
-      const data = await allMenuItems(idToken, orgName, storeName);
+      const data = await allMenuItems();
       setMenus(data.data.items || []);
     } catch (err) {
       console.error(err);
@@ -46,10 +46,10 @@ export function TableCards() {
   const handleSave = async (menuData: MenuItem, isEditMode: boolean) => {
     try {
       if (isEditMode) {
-        await updateMenuItem(idToken, orgName, storeName, menuData);
+        await updateMenuItem(menuData);
         toast.success("Menu item updated successfully");
       } else {
-        await createMenuItem(idToken, orgName, storeName, menuData);
+        await createMenuItem(menuData);
         toast.success("Menu item created successfully");
       }
       setDialogOpen(false);
@@ -63,7 +63,7 @@ export function TableCards() {
   const handleDelete = async (menuItem: MenuItem) => {
     if (window.confirm(`Are you sure you want to delete ${menuItem.itemName}?`)) {
       try {
-        await deleteMenuItem(idToken, orgName, storeName, menuItem.itemName);
+        await deleteMenuItem(menuItem.itemName);
         toast.success("Menu item deleted successfully");
         fetchMenus();
       } catch (error) {

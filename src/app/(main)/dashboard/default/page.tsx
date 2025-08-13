@@ -10,10 +10,6 @@ import { redirect } from "next/navigation";
 export default async function Page() {
 
   const { accessTokenPayload, hasToken, error } = await getSessionForSSR();
-
-  console.log("accessTokenPayload", accessTokenPayload);
-  console.log("hasToken", hasToken);
-  console.log("error", error);
   
   if (error) {
     return <div>Something went wrong while trying to get the session. Error - {error.message}</div>;

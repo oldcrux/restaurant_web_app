@@ -7,7 +7,7 @@ export async function allOrders() {
     const accessTokenPayload = await getAccessTokenPayload();
     // console.log(`all orders: ${JSON.stringify(accessTokenPayload?.user)}`);
     const orgName = accessTokenPayload?.user.organization.orgName;
-    const storeName = "All"; // TODO: make this dynamic
+    const storeName = accessTokenPayload?.user.currentStore;
     const queryParams = `orgName=${orgName}&storeName=${storeName}`;
     const response = await axios.get(`${nodeServerUrl}/api/order?${queryParams}`, {
         headers: {
