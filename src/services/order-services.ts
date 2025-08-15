@@ -1,4 +1,4 @@
-import { Order } from '@/lib/types';
+import { Order, OrderDetails } from '@/lib/types';
 import axios from 'axios';
 import { getAccessTokenPayload } from '@/auth/supertokens/config/app-utils';
 const nodeServerUrl = process.env.NEXT_PUBLIC_NODE_SERVER_URL;
@@ -93,6 +93,23 @@ export async function updateOrderStatus(order: Order) {
     return response.data;
 }
 
+export async function updateOrderDetailStatus(orderDetails: OrderDetails) {
+    const accessTokenPayload = await getAccessTokenPayload();
+
+    const orgName = accessTokenPayload?.user.organization.orgName;
+    const storeName = accessTokenPayload?.user.currentStore;
+
+    orderDetails.updatedBy=accessTokenPayload?.user.userId;
+    // TODO make sure order has orderId and status value
+    console.log(`order status update: ${JSON.stringify(orderDetails)}`);
+    const response = await axios.post(`${nodeServerUrl}/api/order/update/orderDetail/status`, orderDetails, {
+        headers: {
+            'Content-Type': 'application/json',
+            //   Authorization: `Bearer ${idToken}`,
+        },
+    });
+    return response.data;
+}
 
 export async function cancelOrder(  order: Order) {
     const accessTokenPayload = await getAccessTokenPayload();

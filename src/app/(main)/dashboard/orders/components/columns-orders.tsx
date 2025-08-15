@@ -1,12 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { CircleCheck, Loader, Pencil, Phone, PhoneIcon, Printer, Trash } from "lucide-react";
+import { Pencil, Phone, Printer, Trash } from "lucide-react";
+import { statusMap } from "@/lib/utils/order-utils";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Order } from "@/lib/types";
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TableMeta } from "@/types/table-meta";
 import { DeliverOrderDialog } from "./deliver-order-dialogue";
@@ -122,14 +121,7 @@ export const ordersColumns: ColumnDef<Order>[] = [
     header: () => <div className="text-center w-full">Status</div>,
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      const statusMap: Record<string, string> = {
-        CREATED: "bg-yellow-100 text-yellow-800",
-        CONFIRMED: "bg-blue-100 text-blue-800",
-        PROCESSING: "bg-green-100 text-green-600",
-        READY: "bg-green-300 text-green-800",
-        DELIVERED: "bg-gray-100 text-gray-800",
-        CANCELLED: "bg-red-100 text-red-800",
-      };
+      // Status color mapping imported from @/lib/utils/order-utils
 
       return (
         <div className="text-center w-full">

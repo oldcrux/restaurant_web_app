@@ -125,6 +125,7 @@ export interface OrderDetails {
   id: string,
   orderId: string,
   orderNumber: number,
+  status: string;
   item: string,
   itemPrice: number,
   quantity: number,

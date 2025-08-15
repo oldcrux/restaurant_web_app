@@ -16,14 +16,14 @@ import { Order } from "@/lib/types";
 import { allOrders, createOrder, updateOrder, cancelOrder, updateOrderStatus, updateOrderStatusToDelivered } from "@/services/order-services";
 import { ordersColumns } from "./columns-orders";
 import { OrderFormDialog } from "./order-form-dialogue";
+import { OrderViewDialog } from "./order-view-dialog";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import { FilterToolbar } from "./filter-toolbar";
-import { getSessionUser } from "@/auth/supertokens/config/supertokens-util";
+import { getClientSessionUser } from "@/auth/supertokens/config/app-utils";
 
 export function TableCards() {
-  // const idToken = "your-token";
-  // const orgName = "Acme Corporation";
-  const storeName = "001"; // TODO: set the current store and set it to session.
+  const user = getClientSessionUser();
+  const storeName = user?.currentStore;
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +36,6 @@ export function TableCards() {
     try {
       setIsLoading(true);
       const data = await allOrders();
-      // console.log("✅ Fetched orders:", data.data.orders);
       setOrders(data.data.orders || []);
     } catch (err) {
       console.error(err);
@@ -90,6 +89,10 @@ export function TableCards() {
 
   const handleRowClick = (order: Order) => {
     setViewOrder(order);
+  };
+
+  const handleViewClose = () => {
+    setViewOrder(null);
   };
 
   const handleCancel = async (order: Order) => {
@@ -160,7 +163,8 @@ export function TableCards() {
         }
         return column;
       });
-    }, [ordersColumns, handleCancel]);
+    }, [ordersColumns, handleCancel, handleStatusUpdate, handleUpdateOrderStatusToDelivered, handlePrintOrder]);
+  // }, [ordersColumns, handleCancel]);
 
   const table = useDataTableInstance({
       data: orders,
@@ -209,7 +213,7 @@ export function TableCards() {
                 <DataTable 
                   table={table} 
                   columns={ordersColumns}
-                  // onRowClick={handleRowClick} // TODO: implement row click
+                  onRowClick={handleRowClick} // TODO: implement row click
                   rowClassName="hover:bg-muted/50"
                 />
               </div>
@@ -217,27 +221,30 @@ export function TableCards() {
             </CardContent>
           </Card>
 
-
-      {viewOrder ? (
-        console.log("viewOrder", viewOrder),
-        <OrderFormDialog
-          open={!!viewOrder}
-          onOpenChange={(open) => !open && setViewOrder(null)}
-          order={viewOrder}
-          viewOnly={true}
-          onSave={handleSave}
-        />
-      ) : (
-        <OrderFormDialog
-          open={dialogOpen}
-          onOpenChange={(open) => {
-            setDialogOpen(open);
-            if (!open) setEditOrder(undefined);
-          }}
-          order={editOrder}
-          onSave={handleSave}
-        />
-      )}
+      <OrderFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        order={editOrder}
+        onSave={handleSave}
+        viewOnly={false}
+      />
+      <OrderViewDialog
+        open={!!viewOrder}
+        onOpenChange={(open) => !open && setViewOrder(null)}
+        order={viewOrder}
+        onOrderUpdate={(updatedOrder) => {
+          // Update the orders list with the updated order
+          setOrders(prevOrders => 
+            prevOrders.map(order => 
+              order.id === updatedOrder.id ? updatedOrder : order
+            )
+          );
+          // If the updated order is the currently viewed one, update it
+          if (viewOrder && viewOrder.id === updatedOrder.id) {
+            setViewOrder(updatedOrder);
+          }
+        }}
+      />
     
     </div>
   );
