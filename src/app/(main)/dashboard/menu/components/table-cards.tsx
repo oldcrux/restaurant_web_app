@@ -15,6 +15,16 @@ import { allMenuItems, createMenuItem, updateMenuItem, deleteMenuItem } from "@/
 import { menusColumns } from "./columns-menus";
 import MenuFormDialog from "./menu-form-dialogue";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function TableCards() {
   const idToken = "your-token";
@@ -25,6 +35,8 @@ export function TableCards() {
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editMenu, setEditMenu] = useState<MenuItem | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [menuToDelete, setMenuToDelete] = useState<MenuItem | null>(null);
 
   const fetchMenus = async () => {
     try {
@@ -60,17 +72,30 @@ export function TableCards() {
     }
   };
 
-  const handleDelete = async (menuItem: MenuItem) => {
-    if (window.confirm(`Are you sure you want to delete ${menuItem.itemName}?`)) {
-      try {
-        await deleteMenuItem(menuItem.itemName);
-        toast.success("Menu item deleted successfully");
-        fetchMenus();
-      } catch (error) {
-        console.error("Error deleting menu item:", error);
-        toast.error("Failed to delete menu item");
-      }
+  const handleDeleteClick = (menuItem: MenuItem) => {
+    setMenuToDelete(menuItem);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!menuToDelete) return;
+    
+    try {
+      await deleteMenuItem(menuToDelete.itemName);
+      toast.success("Menu item deleted successfully");
+      setDeleteDialogOpen(false);
+      fetchMenus();
+    } catch (error) {
+      console.error("Error deleting menu item:", error);
+      toast.error("Failed to delete menu item");
+    } finally {
+      setMenuToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setMenuToDelete(null);
   };
 
   // Create a memoized version of columns with handlers
@@ -93,7 +118,7 @@ export function TableCards() {
                         setEditMenu(menu);
                         setDialogOpen(true);
                       },
-                      onDelete: handleDelete
+                      onDelete: handleDeleteClick
                     }
                   }
                 }
@@ -150,9 +175,30 @@ export function TableCards() {
         onOpenChange={setDialogOpen}
         menu={editMenu}
         onSave={handleSave}
-        orgName={orgName}
-        storeName={storeName}
+        // orgName={orgName}
+        // storeName={storeName}
       />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the menu item "{menuToDelete?.itemName}".
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

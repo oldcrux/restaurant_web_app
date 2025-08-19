@@ -38,8 +38,6 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   store: Store | null;
-  orgId: string;
-  userId: string;
   onSave: (storeData: Store, isEditMode: boolean) => void;
 }
 
@@ -74,8 +72,6 @@ const storeFormSchema = z.object({
   storeHour: z.any(), // You might want to add proper validation for store hours
   // storeHours: storeHourSchema,
   isActive: z.boolean(),
-  orgName: z.string(),
-  createdBy: z.string(),
   updatedBy: z.string(),
 });
 
@@ -85,8 +81,6 @@ const StoreFormDialog: React.FC<Props> = ({
   open,
   onOpenChange,
   store,
-  orgId,
-  userId,
   onSave,
 }) => {
   const isEditMode = !!store;
@@ -108,8 +102,6 @@ const StoreFormDialog: React.FC<Props> = ({
       timezone: "UTC",
       storeHour: defaultHours,
       isActive: true,
-      orgName: orgId,
-      createdBy: userId,
       updatedBy: "",
     },
   });
@@ -133,9 +125,6 @@ const StoreFormDialog: React.FC<Props> = ({
         timezone: store.timezone ?? "UTC",
         storeHour: store.storeHour ?? defaultHours,
         isActive: store.isActive ?? true,
-        orgName: orgId,
-        createdBy: store.createdBy || userId,
-        updatedBy: userId,
       });
     } else {
       form.reset({
@@ -153,12 +142,10 @@ const StoreFormDialog: React.FC<Props> = ({
         timezone: "UTC",
         storeHour: defaultHours,
         isActive: true,
-        orgName: orgId,
-        createdBy: userId,
         updatedBy: "",
       });
     }
-  }, [store, isEditMode, orgId, userId, form]);
+  }, [store, isEditMode, form]);
 
   const onSubmit = async (data: StoreFormValues) => {
     onSave(data as Store, isEditMode);

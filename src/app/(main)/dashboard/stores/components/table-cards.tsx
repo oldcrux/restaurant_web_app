@@ -19,10 +19,6 @@ import StoreFormDialog from "./store-form-dialogue";
 
 export function TableCards() {
 
-  const idToken = "your-token";
-  const orgId = "Acme Corporation";
-  const userId = "user-id";
-
   const [stores, setStores] = useState<Store[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -46,7 +42,6 @@ export function TableCards() {
   }, []);
 
   const handleSave = async (storeData: Store, isEditMode: boolean) => {
-    console.log("storeData", storeData);
     try {
       if (isEditMode) {
         await updateStore(storeData);
@@ -164,8 +159,6 @@ export function TableCards() {
         onOpenChange={setDialogOpen}
         store={editStore}
         onSave={handleSave}
-        orgId={orgId}
-        userId={userId}
       />
 
     </div>

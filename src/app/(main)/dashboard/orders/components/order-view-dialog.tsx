@@ -17,8 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { updateOrderDetailStatus, updateOrderStatus } from "@/services/order-services";
 import { toast } from "sonner";
-import { DeliverOrderDialog } from "./deliver-order-dialogue";
-import { Loader2, Phone, User, CheckCircle } from "lucide-react";
+import { DeliverOrderDialog } from "./deliver-order-dialog";
+import { Loader2, Phone, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface OrderViewDialogProps {

@@ -93,7 +93,8 @@ export interface Role {
 
 export interface MenuItem {
   orgName: string;
-  storeName: string;
+  storeName?: string;
+  selectedStores?: string[];
   itemName: string;
   itemDescription: string;
   itemPrice: number;

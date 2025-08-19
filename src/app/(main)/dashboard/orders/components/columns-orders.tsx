@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Order } from "@/lib/types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TableMeta } from "@/types/table-meta";
-import { DeliverOrderDialog } from "./deliver-order-dialogue";
+import { DeliverOrderDialog } from "./deliver-order-dialog";
 import { useState } from "react";
 
 export const ordersColumns: ColumnDef<Order>[] = [

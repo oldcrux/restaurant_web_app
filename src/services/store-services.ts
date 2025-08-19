@@ -24,11 +24,11 @@ export async function createStore(store: Store) {
   const orgName = accessTokenPayload?.user.organization.orgName;
   const userId = accessTokenPayload?.user.userId;
 
-  // console.log(`create store data ${JSON.stringify(store)}`);
-
   store.orgName = orgName;
-  store.createdBy = userId
+  store.createdBy = userId;
+  store.updatedBy = userId;
 
+  console.log(`create store data ${JSON.stringify(store)}`);
   const response = await axios.post(`${nodeServerUrl}/api/store/create`, store, {
     headers: {
       'Content-Type': 'application/json',

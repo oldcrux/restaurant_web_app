@@ -205,6 +205,7 @@ export function OrderFormDialog({
         item: detail.itemName,
         itemPrice: detail.itemPrice,
         quantity: detail.quantity,
+        status: "CREATED",
         notes: detail.customizable ? (detail.notes || "") : "",
         createdAt: now,
         updatedAt: now,

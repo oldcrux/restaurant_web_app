@@ -24,13 +24,13 @@ export async function createMenuItem(menu: MenuItem){
     const accessTokenPayload = await getAccessTokenPayload();
 
     const orgName = accessTokenPayload?.user.organization.orgName;
-    const storeName = accessTokenPayload?.user.currentStore;
+    // const storeName = accessTokenPayload?.user.currentStore;
 
     menu.orgName=orgName;
-    menu.storeName=storeName;
+    // menu.storeName=storeName;
     menu.createdBy=accessTokenPayload?.user.userId;
     menu.updatedBy=accessTokenPayload?.user.userId;
-    console.log(`menu create: ${JSON.stringify(menu)}`);
+    console.log(`creating Menu Item: ${JSON.stringify(menu)}`);
     const response = await axios.post(`${nodeServerUrl}/api/menu-items/create`, menu, {
         headers: {
             'Content-Type': 'application/json',

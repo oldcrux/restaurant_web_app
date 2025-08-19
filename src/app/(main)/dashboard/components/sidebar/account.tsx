@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BadgeCheck, Bell, CreditCard, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -34,7 +34,6 @@ export function Account({ user }: { user?: User | null }) {
 
   const [sessionUser, setSessionUser] = useState<User>(user || defaultUser);
 
-  // console.log("sessionUser", sessionUser);
   // Ensure we always have a valid user object
   const currentUser = user || defaultUser;
 
@@ -59,7 +58,6 @@ export function Account({ user }: { user?: User | null }) {
             "p-0",
             currentUser.id === sessionUser?.id && "bg-accent/50 border-l-primary border-l-2"
           )}
-          onClick={() => setSessionUser(currentUser)}
         >
           <div className="flex w-full items-center justify-between gap-2 px-1 py-1.5">
             <Avatar className="size-9 rounded-lg">
