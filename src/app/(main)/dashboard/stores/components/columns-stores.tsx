@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Store } from "@/lib/types";
 import { TableMeta } from "@/types/table-meta";
+import { canManageStore } from "@/auth/supertokens/config/app-utils";
 
 export const storesColumns: ColumnDef<Store>[] = [
   {
@@ -70,25 +71,30 @@ export const storesColumns: ColumnDef<Store>[] = [
         <div className="text-center space-x-2">
           <Tooltip>
             <TooltipTrigger asChild>
+              <span>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => meta.onEdit?.(store)}
+                disabled={!canManageStore()}
               >
                 <Pencil className="w-4 h-4" />
                 <span className="sr-only">Edit</span>
               </Button>
+              </span>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Edit Store</p>
+              <p>{canManageStore() ? 'Edit Store' : 'You do not have permission to edit Store'}</p>
             </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
+              <span>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => meta.onToggleStoreStatus?.(row.original)}
+                disabled={!canManageStore()}
               >
                 {row.original.isActive ? (
                   <>
@@ -102,9 +108,10 @@ export const storesColumns: ColumnDef<Store>[] = [
                   </>
                 )}
               </Button>
+              </span>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{row.original.isActive ? 'Deactivate Store' : 'Activate Store'}</p>
+              <p>{canManageStore() ? (row.original.isActive ? 'Deactivate Store' : 'Activate Store') : 'You do not have permission to perform this action'}</p>
             </TooltipContent>
           </Tooltip>
           {/* <Tooltip>

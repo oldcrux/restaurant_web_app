@@ -165,6 +165,7 @@ export function UserFormDialog({
         // Ensure we're working with an array
         const storesData = Array.isArray(response) ? response :
           response.data ? response.data.stores || response.data : [];
+          // TODO if user does not have 'org_admin' role, filter out stores that
         setStores(storesData);
       } catch (error) {
         console.error("Error fetching stores:", error);

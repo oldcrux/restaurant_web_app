@@ -27,5 +27,30 @@ export function getClientSessionUser() {
     return () => { mounted = false; };
   }, []);
 
+  console.log(`session user ${JSON.stringify(sessionUser)}`);
   return sessionUser;
+}
+
+
+export function isUserOrgAdmin() {
+    const sessionUser = getClientSessionUser();
+    return sessionUser?.permissions?.includes("org_admin");
+}
+
+export function isUserStoreAdmin() {
+  const sessionUser = getClientSessionUser();
+  return sessionUser?.permissions?.includes("store_write");
+}
+
+export function canCreateStore() {
+   return isUserOrgAdmin();
+}
+
+export function canManageStore() {
+  return isUserStoreAdmin();
+}
+
+export function canManageUser() {
+  const sessionUser = getClientSessionUser();
+  return sessionUser?.permissions?.includes("user_write");
 }

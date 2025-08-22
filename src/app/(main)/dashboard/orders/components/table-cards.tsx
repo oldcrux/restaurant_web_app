@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { Order } from "@/lib/types";
 import { allOrders, createOrder, updateOrder, cancelOrder, updateOrderStatus, updateOrderStatusToDelivered } from "@/services/order-services";
 import { ordersColumns } from "./columns-orders";
-import { OrderFormDialog } from "./order-form-dialogue";
+import { OrderFormDialog } from "./order-form-dialog";
 import { OrderViewDialog } from "./order-view-dialog";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import { FilterToolbar } from "./filter-toolbar";

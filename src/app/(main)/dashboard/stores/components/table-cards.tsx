@@ -15,7 +15,8 @@ import { storesColumns } from "./columns-stores";
 import { useEffect, useState } from "react";
 import { Store } from "@/lib/types";
 import { activateStore, allStores, createStore, deActivateStore, updateStore } from "@/services/store-services";
-import StoreFormDialog from "./store-form-dialogue";
+import StoreFormDialog from "./store-form-dialog";
+import { canCreateStore } from "@/auth/supertokens/config/app-utils";
 
 export function TableCards() {
 
@@ -138,6 +139,7 @@ export function TableCards() {
                     setDialogOpen(true);
                   }}
                   className="gap-2"
+                  disabled={!canCreateStore()}
                 >
                   <Plus className="w-4 h-4" />
                   Add Store

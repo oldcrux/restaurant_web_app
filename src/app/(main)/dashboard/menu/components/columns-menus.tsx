@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MenuItem } from "@/lib/types";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TableMeta } from "@/types/table-meta";
+import { isUserOrgAdmin } from "@/auth/supertokens/config/app-utils";
 
 export const menusColumns: ColumnDef<MenuItem>[] = [
   {
@@ -62,6 +63,23 @@ export const menusColumns: ColumnDef<MenuItem>[] = [
     enableSorting: false,
   },
   {
+    accessorKey: "selectedStores",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Available In" />,
+    cell: ({ row }) => {
+      const stores = row.original.selectedStores || [];
+      return (
+        <div className="flex flex-wrap gap-1">
+          {stores.map((store, index) => (
+            <Badge key={index} variant="outline" className="whitespace-nowrap">
+              {store}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+    enableSorting: false,
+  },
+  {
     id: "actions",
     header: () => <div className="text-center w-full">Actions</div>,
     cell: ({ row, table }) => {
@@ -91,6 +109,7 @@ export const menusColumns: ColumnDef<MenuItem>[] = [
                 size="icon" 
                 onClick={() => meta.onDelete?.(row.original)} 
                 className="text-red-500 hover:text-red-600"
+                disabled={!isUserOrgAdmin()}
               >
                 <Trash2 className="w-4 h-4" />
                 <span className="sr-only">Delete</span>

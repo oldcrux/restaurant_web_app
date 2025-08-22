@@ -7,9 +7,11 @@ const nodeServerUrl = process.env.NEXT_PUBLIC_NODE_SERVER_URL;
 export async function allMenuItems(){
     const accessTokenPayload = await getAccessTokenPayload();
 
+    const isUserOrgAdmin = accessTokenPayload?.user.permissions.includes("org_admin");
     const orgName = accessTokenPayload?.user.organization.orgName;
-    const storeName = accessTokenPayload?.user.currentStore;
+    const storeName = isUserOrgAdmin ? "" : accessTokenPayload?.user.currentStore;
 
+    // If user is Org Admin, fetch all menu items across stores. else fetch menu items for current store only.
     const queryParams = `orgName=${orgName}&storeName=${storeName}`;
     const response = await axios.get(`${nodeServerUrl}/api/menu-items?${queryParams}`, {
         headers: {
@@ -17,7 +19,7 @@ export async function allMenuItems(){
         //   Authorization: `Bearer ${idToken}`,
         },
       });
-      return response.data;
+      return response.data.data.items;
 }
 
 export async function createMenuItem(menu: MenuItem){
@@ -44,10 +46,10 @@ export async function createMenuItem(menu: MenuItem){
         const accessTokenPayload = await getAccessTokenPayload();
 
         const orgName = accessTokenPayload?.user.organization.orgName;
-        const storeName = accessTokenPayload?.user.currentStore;
+        // const storeName = accessTokenPayload?.user.currentStore;
 
         menu.orgName=orgName;
-        menu.storeName=storeName;
+        // menu.storeName=storeName;
         menu.updatedBy=accessTokenPayload?.user.userId;
 
         const response = await axios.post(`${nodeServerUrl}/api/menu-items/update`, menu, {

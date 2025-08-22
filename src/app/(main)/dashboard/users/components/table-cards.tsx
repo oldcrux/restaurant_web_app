@@ -22,6 +22,7 @@ import { usersColumns } from "./columns-users";
 import { User } from "@/lib/types";
 import { allUsers, createUser, updateUser, activateUser, deActivateUser } from "@/services/user-services";
 import { UserFormDialog } from "./user-form-dialog";
+import { canManageUser } from "@/auth/supertokens/config/app-utils";
 
 export function TableCards() {
   const [users, setUsers] = useState<User[]>([]);
@@ -164,9 +165,10 @@ export function TableCards() {
                     setDialogOpen(true);
                   }}
                   className="gap-2"
+                  disabled={!canManageUser()}
                 >
                   <Plus className="w-4 h-4" />
-                  Add User
+                  {canManageUser() ? 'Add User' : 'You do not have permission to add User'}
                 </Button>
               </div>
             </div>

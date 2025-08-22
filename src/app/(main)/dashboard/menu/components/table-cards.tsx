@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { MenuItem } from "@/lib/types";
 import { allMenuItems, createMenuItem, updateMenuItem, deleteMenuItem } from "@/services/menu-services";
 import { menusColumns } from "./columns-menus";
-import MenuFormDialog from "./menu-form-dialogue";
+import MenuFormDialog from "./menu-form-dialog";
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import {
   AlertDialog,
@@ -27,9 +27,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export function TableCards() {
-  const idToken = "your-token";
-  const orgName = "Acme Corporation";
-  const storeName = "001";
 
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,8 +38,31 @@ export function TableCards() {
   const fetchMenus = async () => {
     try {
       setIsLoading(true);
-      const data = await allMenuItems();
-      setMenus(data.data.items || []);
+      const menuItems = await allMenuItems();
+      
+      // Group menu items by itemName
+      const groupedItems = menuItems.reduce((acc: Record<string, MenuItem>, item: MenuItem) => {
+        if (!acc[item.itemName]) {
+          // Create a new entry with selectedStores array
+          acc[item.itemName] = {
+            ...item,
+            selectedStores: item.storeName ? [item.storeName] : []
+          };
+        } else if (item.storeName) {
+          // Add store to existing item's selectedStores if not already present
+          if (!acc[item.itemName].selectedStores?.includes(item.storeName)) {
+            acc[item.itemName].selectedStores = [
+              ...(acc[item.itemName].selectedStores || []),
+              item.storeName
+            ];
+          }
+        }
+        return acc;
+      }, {} as Record<string, MenuItem>);
+
+      // Convert the grouped object back to array and assert type
+      const processedItems = Object.values(groupedItems) as MenuItem[];
+      setMenus(processedItems);
     } catch (err) {
       console.error(err);
       toast.error("Error fetching menu items");

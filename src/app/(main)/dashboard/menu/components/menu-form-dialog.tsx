@@ -139,8 +139,6 @@ const MenuFormDialog: React.FC<Props> = ({
       setShowInfoDialog(true);
       return;
     }
-
-    console.log("menu item data", data);
     const menuItem: MenuItem = {
       ...data,
       itemDescription: data.itemDescription || '',
@@ -164,7 +162,7 @@ const MenuFormDialog: React.FC<Props> = ({
     onSave(menuItem, isEditMode);
   };
 
-  const hasStoreCreatePermission = sessionUser?.permissions?.includes("store_create");
+  const hasStoreCreatePermission = sessionUser?.permissions?.includes("org_admin");
   const allStoreOptions = sessionUser?.storeRoles?.map((role: { storeName: string }) => role.storeName) || [];
   const storeOptions = hasStoreCreatePermission 
     ? ["All", ...allStoreOptions]
