@@ -55,10 +55,9 @@ export const sidebarItems: NavGroup[] = [
         icon: Menu,
       },
       {
-        title: "Appointments",
-        url: "/dashboard/appointments",
+        title: "Bookings",
+        url: "/dashboard/bookings",
         icon: Calendar,
-        comingSoon: true,
       },
     ],
   },

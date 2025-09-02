@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { format } from "date-fns";
+import { DateTime } from "luxon";
 import { Order, OrderDetails } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -33,7 +33,8 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
 
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), "PPpp");
+      const date = DateTime.fromSQL(dateString as string, { zone: 'utc' });
+      return date.isValid ? date.toFormat("MMM d, yyyy h:mm a") : "Invalid Date";
     } catch (error) {
       return dateString;
     }

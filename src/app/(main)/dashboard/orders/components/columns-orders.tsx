@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { DateTime } from "luxon";
 import { Pencil, Phone, Printer, Trash } from "lucide-react";
 import { statusMap } from "@/lib/utils/order-utils";
 
@@ -150,8 +150,14 @@ export const ordersColumns: ColumnDef<Order>[] = [
     accessorKey: "createdAt",
     header: () => <div className="text-center w-full">Created At</div>,
     cell: ({ row }) => {
-      const date = new Date(row.getValue("createdAt"));
-      return <div className="text-center w-full">{format(date, "MMM d, yyyy h:mm a")}</div>;
+      const rawDate = row.getValue("createdAt"); // e.g., "2025-07-25 13:20:56.778+00"
+      const date = DateTime.fromSQL(rawDate as string, { zone: 'utc' });
+  
+      return (
+        <div className="text-center w-full">
+          {date.isValid ? date.toFormat("MMM d, yyyy h:mm a") : "Invalid Date"}
+        </div>
+      );
     },
   },
   // {

@@ -46,6 +46,7 @@ export async function updateStore(store: Store) {
   // console.log(`updating vehicle data ${JSON.stringify(vehicle)}`);
   store.orgName = orgName;
   store.updatedBy = userId;
+  // console.log(`updating store data ${JSON.stringify(store)}`);
   const response = await axios.post(`${nodeServerUrl}/api/store/update`, store, {
     headers: {
       'Content-Type': 'application/json',

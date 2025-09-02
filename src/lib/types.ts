@@ -134,3 +134,20 @@ export interface OrderDetails {
   createdBy: string,
   updatedBy: string,
 }
+
+export interface Booking {
+  id: string,
+  customerName: string;
+  customerPhoneNumber: string;
+  guestsCount: number;
+  startTime: string;
+  endTime: string;
+  status: string;
+  createdBy: string;
+  updatedBy: string;
+  orgName: string;
+  storeName: string;
+  notes: string,
+  createdAt: string,
+  updatedAt: string,
+}

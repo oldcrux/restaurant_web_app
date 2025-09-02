@@ -72,7 +72,7 @@ const storeFormSchema = z.object({
   storeHour: z.any(), // You might want to add proper validation for store hours
   // storeHours: storeHourSchema,
   isActive: z.boolean(),
-  updatedBy: z.string(),
+  // updatedBy: z.string(),
 });
 
 type StoreFormValues = z.infer<typeof storeFormSchema>;
@@ -102,7 +102,7 @@ const StoreFormDialog: React.FC<Props> = ({
       timezone: "UTC",
       storeHour: defaultHours,
       isActive: true,
-      updatedBy: "",
+      // updatedBy: "",
     },
   });
 
@@ -142,7 +142,7 @@ const StoreFormDialog: React.FC<Props> = ({
         timezone: "UTC",
         storeHour: defaultHours,
         isActive: true,
-        updatedBy: "",
+        // updatedBy: "",
       });
     }
   }, [store, isEditMode, form]);

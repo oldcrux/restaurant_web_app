@@ -27,7 +27,7 @@ export function getClientSessionUser() {
     return () => { mounted = false; };
   }, []);
 
-  console.log(`session user ${JSON.stringify(sessionUser)}`);
+  // console.log(`session user ${JSON.stringify(sessionUser)}`);
   return sessionUser;
 }
 
