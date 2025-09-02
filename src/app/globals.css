@@ -8,6 +8,37 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Toast Styles */
+:root {
+  --toast-success-bg: hsl(142.1, 76.2%, 96.3%);
+  --toast-success-text: hsl(142.1, 76.2%, 36.3%);
+  --toast-success-border: hsl(142.1, 76.2%, 86.3%);
+  --toast-error-bg: hsl(0, 84.2%, 97.1%);
+  --toast-error-text: hsl(0, 84.2%, 60.2%);
+  --toast-error-border: hsl(0, 84.2%, 87.1%);
+  --toast-warning-bg: hsl(47.9, 95.8%, 96.1%);
+  --toast-warning-text: hsl(32, 95%, 44%);
+  --toast-warning-border: hsl(47.9, 95.8%, 86.1%);
+  --toast-info-bg: hsl(214.3, 93.9%, 97.1%);
+  --toast-info-text: hsl(214.3, 93.9%, 42.7%);
+  --toast-info-border: hsl(214.3, 93.9%, 87.1%);
+}
+
+.dark {
+  --toast-success-bg: hsl(142.1, 76.2%, 20%);
+  --toast-success-text: hsl(142.1, 76.2%, 80%);
+  --toast-success-border: hsl(142.1, 76.2%, 30%);
+  --toast-error-bg: hsl(0, 84.2%, 20%);
+  --toast-error-text: hsl(0, 84.2%, 80%);
+  --toast-error-border: hsl(0, 84.2%, 30%);
+  --toast-warning-bg: hsl(32, 95%, 20%);
+  --toast-warning-text: hsl(47.9, 95.8%, 80%);
+  --toast-warning-border: hsl(47.9, 95.8%, 30%);
+  --toast-info-bg: hsl(214.3, 93.9%, 20%);
+  --toast-info-text: hsl(214.3, 93.9%, 80%);
+  --toast-info-border: hsl(214.3, 93.9%, 30%);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -40,6 +71,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  
+  /* Toast Variables */
+  --toast-bg: var(--background);
+  --toast-foreground: var(--foreground);
+  --toast-border: var(--border);
+  
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
