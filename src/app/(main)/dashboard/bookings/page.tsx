@@ -1,22 +1,40 @@
 import BookingScheduler from "./components/booking-scheduler";
+import { getSessionForSSR } from "@/auth/supertokens/config/supertokens-util";
+import { redirect } from "next/navigation";
 
 export default async function BookingsPage() {
 
-  return (
-    // <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:gap-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Bookings</h2>
-          <p className="text-muted-foreground">
-            Manage your restaurant's Bookings
-          </p>
-        </div>
-      </div>
+  const { accessTokenPayload, hasToken, error } = await getSessionForSSR();
 
-      <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-        <BookingScheduler />
-      </div>
+  if (error) {
+    return <div>Something went wrong while trying to get the session. Error - {error.message}</div>;
+    // return redirect("/auth/login");
+  }
+  // `accessTokenPayload` will be undefined if it the session does not exist or has expired
+  if (accessTokenPayload === undefined) {
+    // if (!hasToken) {
+    /**
+     * This means that the user is not logged in. If you want to display some other UI in this
+     * case, you can do so here.
+     */
+    console.log("session not found");
+    return redirect("/auth/login");
+    // }
+
+    /**
+     * This means that the session does not exist but we have session tokens for the user. In this case
+     * the `TryRefreshComponent` will try to refresh the session.
+     *
+     * To learn about why the 'key' attribute is required refer to: https://github.com/supertokens/supertokens-node/issues/826#issuecomment-2092144048
+     */
+    // return <TryRefreshComponent key={Date.now()} />;
+  }
+
+  return (
+
+
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+      <BookingScheduler />
     </div>
   );
 }

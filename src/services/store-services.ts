@@ -62,7 +62,7 @@ export async function deActivateStore(store: Store) {
   const userId = accessTokenPayload?.user.userId;
   store.updatedBy = userId;
   // console.log(`updating vehicle data ${JSON.stringify(vehicle)}`);
-  const queryParams = `orgName=${orgName}&storeName=${store.storeName}`;
+  const queryParams = `orgName=${orgName}&storeName=${store.storeName}&updatedBy=${userId}`;
   const response = await axios.post(`${nodeServerUrl}/api/store/deactivate?${queryParams}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export async function activateStore(store: Store) {
   const userId = accessTokenPayload?.user.userId;
   store.updatedBy = userId;
   // console.log(`updating vehicle data ${JSON.stringify(vehicle)}`);
-  const queryParams = `orgName=${orgName}&storeName=${store.storeName}`;
+  const queryParams = `orgName=${orgName}&storeName=${store.storeName}&updatedBy=${userId}`;
   const response = await axios.post(`${nodeServerUrl}/api/store/activate?${queryParams}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -86,4 +86,17 @@ export async function activateStore(store: Store) {
     },
   });
   return response.status;
+}
+
+export async function getStoreByStoreName(storeName: string) {
+  const accessTokenPayload = await getAccessTokenPayload();
+  const orgName = accessTokenPayload?.user.organization.orgName;
+  const queryParams = `orgName=${orgName}&storeName=${storeName}`;
+  const response = await axios.get(`${nodeServerUrl}/api/store/detail?${queryParams}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      //   Authorization: `Bearer ${idToken}`,
+    },
+  });
+  return response.data; 
 }

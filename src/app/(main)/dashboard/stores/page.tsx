@@ -10,14 +10,14 @@ export default async function Page() {
     }
     // `accessTokenPayload` will be undefined if it the session does not exist or has expired
     if (accessTokenPayload === undefined) {
-      if (!hasToken) {
+      // if (!hasToken) {
         /**
          * This means that the user is not logged in. If you want to display some other UI in this
          * case, you can do so here.
          */
         console.log("session not found");
         return redirect("/auth/login");
-      }
+      // }
   
       /**
        * This means that the session does not exist but we have session tokens for the user. In this case

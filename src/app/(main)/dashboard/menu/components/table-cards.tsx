@@ -163,7 +163,7 @@ export function TableCards() {
       <Card>
         <CardHeader>
           <CardTitle>Menu Items</CardTitle>
-          <CardDescription>Track and manage your menu items.</CardDescription>
+          <CardDescription>Track and manage your menu items</CardDescription>
           <CardAction>
             <div className="flex items-center gap-2">
               <DataTableViewOptions table={table} />

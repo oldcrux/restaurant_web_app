@@ -45,6 +45,7 @@ export function TableCards() {
   const handleSave = async (storeData: Store, isEditMode: boolean) => {
     try {
       if (isEditMode) {
+        console.log("✅ Saving store:", storeData);
         await updateStore(storeData);
         toast.success("Store updated");
       } else {
@@ -128,7 +129,7 @@ export function TableCards() {
       <Card>
         <CardHeader>
           <CardTitle>Stores</CardTitle>
-          <CardDescription>Track and manage your stores.</CardDescription>
+          <CardDescription>Track and manage your stores</CardDescription>
           <CardAction>
             <div className="flex items-center gap-2">
               <DataTableViewOptions table={table} />

@@ -189,7 +189,7 @@ export function TableCards() {
     <Card>
             <CardHeader>
               <CardTitle>Orders</CardTitle>
-              <CardDescription>Track and manage all orders.</CardDescription>
+              <CardDescription>Track and manage all orders</CardDescription>
               <CardAction>
                 <div className="flex items-center gap-2">
                   <DataTableViewOptions table={table} />

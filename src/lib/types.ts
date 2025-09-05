@@ -22,14 +22,16 @@ export interface StoreHours {
 }
 
 export const timezones = [
-  { value: 'EST', label: 'Eastern Time (EST/EDT)' },
-  { value: 'CST', label: 'Central Time (CST/CDT)' },
-  { value: 'MST', label: 'Mountain Time (MST/MDT)' },
-  { value: 'PST', label: 'Pacific Time (PST/PDT)' },
-  { value: 'AKST', label: 'Alaska Time (AKST/AKDT)' },
-  { value: 'HST', label: 'Hawaii Time (HST/HDT)' },
+  { value: 'America/New_York', label: 'Eastern Time (ET)' },
+  { value: 'America/Chicago', label: 'Central Time (CT)' },
+  { value: 'America/Denver', label: 'Mountain Time (MT)' },
+  { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
+  { value: 'America/Anchorage', label: 'Alaska Time (AKT)' },
+  { value: 'Pacific/Honolulu', label: 'Hawaii Time (HST)' },
+  { value: 'Asia/Kolkata', label: 'India Standard Time (IST)' },
   { value: 'UTC', label: 'Coordinated Universal Time (UTC)' },
 ];
+
 
 export interface Store {
   orgName: string;

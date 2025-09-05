@@ -2,7 +2,7 @@ import React from "react";
 import { StoreHours } from "@/lib/types";
 
 interface Props {
-  timezone: string;
+  // timezone: string;
   hours: StoreHours;
   onChange: (hours: StoreHours) => void;
 }
@@ -17,16 +17,16 @@ const weekDays: Record<keyof StoreHours, string> = {
   sunday: "Sunday",
 };
 
-const StoreHoursEditor: React.FC<Props> = ({ timezone, hours, onChange }) => {
+const StoreHoursEditor: React.FC<Props> = ({ hours, onChange }) => {
   const updateDay = (day: keyof StoreHours, open: string, close: string) => {
     const newHours = { ...hours };
-    newHours[day] = [`${open} ${timezone}`, `${close} ${timezone}`];
+    newHours[day] = [`${open}`, `${close}`];
     onChange(newHours);
   };
 
   const toggleDay = (day: keyof StoreHours, enabled: boolean) => {
     const newHours = { ...hours };
-    newHours[day] = enabled ? [`09:00 ${timezone}`, `19:00 ${timezone}`] : null;
+    newHours[day] = enabled ? [`09:00`, `19:00`] : null;
     onChange(newHours);
   };
 

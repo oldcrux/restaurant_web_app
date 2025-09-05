@@ -154,7 +154,7 @@ export function TableCards() {
       <Card>
         <CardHeader>
           <CardTitle>Users</CardTitle>
-          <CardDescription>Manage your organization's users and their permissions.</CardDescription>
+          <CardDescription>Manage your organization's users and their permissions</CardDescription>
           <CardAction>
             <div className="flex items-center gap-2">
               <DataTableViewOptions table={table} />

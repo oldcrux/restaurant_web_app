@@ -42,12 +42,12 @@ interface Props {
 }
 
 const defaultHours: StoreHours = {
-  monday: ["09:00 EST", "19:00 EST"],
-  tuesday: ["09:00 EST", "19:00 EST"],
-  wednesday: ["09:00 EST", "19:00 EST"],
-  thursday: ["09:00 EST", "19:00 EST"],
-  friday: ["09:00 EST", "19:00 EST"],
-  saturday: ["09:00 EST", "18:00 EST"],
+  monday: ["09:00", "19:00"],
+  tuesday: ["09:00", "19:00"],
+  wednesday: ["09:00", "19:00"],
+  thursday: ["09:00", "19:00"],
+  friday: ["09:00", "19:00"],
+  saturday: ["09:00", "18:00"],
   sunday: null,
 };
 
@@ -212,7 +212,7 @@ const StoreFormDialog: React.FC<Props> = ({
             </div>
 
             <StoreHoursEditor
-              timezone={form.watch('timezone')}
+              // timezone={form.watch('timezone')}
               hours={form.watch('storeHour')}
               onChange={(storeHour) => form.setValue('storeHour', storeHour)}
             />
