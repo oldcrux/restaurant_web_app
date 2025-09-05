@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Order, MenuItem } from "@/lib/types";
 import { orderSchema } from "./schema";
-import { allMenuItems } from "@/services/menu-services";
+import { allMenuItems, fetchMenuItemsToCreateOrder } from "@/services/menu-services";
 import { toast } from "sonner";
 import { Loader2, Plus, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -102,9 +102,9 @@ export function OrderFormDialog({
         setError(null);
 
         // Use the menu service to fetch items
-        const response = await allMenuItems();
-        if (response && response.data && Array.isArray(response.data.items)) {
-          setMenuItems(response.data.items);
+        const items = await fetchMenuItemsToCreateOrder();
+        if (items) {
+          setMenuItems(items);
         } else {
           throw new Error("Invalid menu items data format");
         }
@@ -287,13 +287,6 @@ export function OrderFormDialog({
                   {error ? (
                     <div className="bg-red-50 p-4 rounded-md text-center">
                       <p className="text-red-600 mb-2">{error}</p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => window.location.reload()}
-                      >
-                        Retry
-                      </Button>
                     </div>
                   ) : isLoadingMenuItems ? (
                     <div className="text-center py-8">
