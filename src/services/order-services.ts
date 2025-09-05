@@ -27,7 +27,7 @@ export async function createOrder(order: Order) {
     order.orgName=orgName;
     order.createdBy=accessTokenPayload?.user.userId;
     order.updatedBy=accessTokenPayload?.user.userId;
-    console.log(`order create: ${JSON.stringify(order)}`);
+    // console.log(`order create: ${JSON.stringify(order)}`);
     const response = await axios.post(`${nodeServerUrl}/api/order/create`, order, {
         headers: {
             'Content-Type': 'application/json',

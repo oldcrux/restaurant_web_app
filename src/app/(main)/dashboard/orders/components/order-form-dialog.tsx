@@ -49,6 +49,7 @@ interface OrderDetailForm {
 interface OrderFormValues {
   customerName: string;
   customerPhoneNumber: string;
+  orderNotes: string;
   orderDetails: OrderDetailForm[];
 }
 
@@ -73,11 +74,12 @@ export function OrderFormDialog({
   const [isLoadingMenuItems, setIsLoadingMenuItems] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<OrderFormValues>({
+  const form = useForm<OrderFormValues & { orderNotes: string }>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       customerName: "",
       customerPhoneNumber: "",
+      orderNotes: "",
       orderDetails: [{
         itemName: "",
         itemPrice: 0,
@@ -129,6 +131,7 @@ export function OrderFormDialog({
       form.reset({
         customerName: order.customerName,
         customerPhoneNumber: order.customerPhoneNumber,
+        orderNotes: order.notes || "",
         orderDetails: order.orderDetails?.map((detail) => ({
           itemName: detail.item,
           itemPrice: detail.itemPrice,
@@ -214,16 +217,17 @@ export function OrderFormDialog({
       }));
 
       const orderData: Partial<Order> = {
-        id:order?.id || "",
+        id: order?.id || "",
         customerName: data.customerName,
         customerPhoneNumber: data.customerPhoneNumber,
         totalCost,
         status: "CREATED",
         orderNumber: order?.orderNumber || 0,
         orderDetails,
-        notes: order?.notes || "",
+        notes: data.orderNotes || "",
       };
 
+      // console.log("✅ Order data:", orderData);
       onSave(orderData as Order, !!order);
       onOpenChange(false);
     } catch (error) {
@@ -283,6 +287,23 @@ export function OrderFormDialog({
                 </div>
 
                 <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="orderNotes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Order Notes</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Any special instructions or notes for the kitchen?" 
+                            {...field} 
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   {error ? (
                     <div className="bg-red-50 p-4 rounded-md text-center">

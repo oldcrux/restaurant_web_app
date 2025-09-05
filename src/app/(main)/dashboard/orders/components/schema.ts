@@ -10,6 +10,7 @@ import { z } from "zod";
 export const orderSchema = z.object({
   customerName: z.string().min(1, "Required"),
   customerPhoneNumber: z.string().min(10, "Enter valid number"),
+  orderNotes: z.string().optional(),
   orderDetails: z.array(z.object({
     itemName: z.string().min(1),
     itemPrice: z.number().min(0),
