@@ -32,10 +32,12 @@ import {
 } from "@/components/ui/select";
 import { Order, MenuItem } from "@/lib/types";
 import { orderSchema } from "./schema";
-import { allMenuItems, fetchMenuItemsToCreateOrder } from "@/services/menu-services";
+import { fetchMenuItemsToCreateOrder } from "@/services/menu-services";
 import { toast } from "sonner";
 import { Loader2, Plus, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getClientSessionUser } from "@/auth/supertokens/config/app-utils";
 
 interface OrderDetailForm {
   id: string;
@@ -95,6 +97,9 @@ export function OrderFormDialog({
     control: form.control,
     name: "orderDetails",
   });
+
+  const user = getClientSessionUser();
+  const storeName = user?.currentStore;
 
   // Fetch menu items when the dialog opens
   useEffect(() => {
@@ -169,7 +174,7 @@ export function OrderFormDialog({
 
   const handleAddItem = () => {
     append({
-      id:"",
+      id: "",
       itemName: "",
       itemPrice: 0,
       quantity: 1,
@@ -242,7 +247,15 @@ export function OrderFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[100vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{viewOnly ? 'Order Details' : (isEditMode ? 'Edit Order' : 'Create New Order')}</DialogTitle>
+          <DialogTitle className="text-2xl font-bold flex items-center gap-3">
+            {viewOnly ? 'Order Details' : (isEditMode ? 'Edit Order' : 'Create New Order')}
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-sm bg-muted/20">
+                {storeName}
+              </Badge>
+            </div>
+
+          </DialogTitle>
           <DialogDescription>
             {viewOnly ? 'View order details' : (isEditMode ? 'Update the order details below.' : 'Fill out the form to create a new order.')}
           </DialogDescription>
@@ -294,9 +307,9 @@ export function OrderFormDialog({
                       <FormItem>
                         <FormLabel>Order Notes</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Any special instructions or notes for the kitchen?" 
-                            {...field} 
+                          <Textarea
+                            placeholder="Any special instructions or notes for the kitchen?"
+                            {...field}
                             rows={3}
                           />
                         </FormControl>
@@ -423,26 +436,26 @@ export function OrderFormDialog({
                   )}
 
                   {!viewOnly && (
-                  <div className="flex justify-between items-center">
-                    <h4 className="text-sm font-medium">Order Items</h4>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={handleAddItem}
-                      className="gap-1"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Item
-                    </Button>
-                  </div>
-                )}
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-sm font-medium">Order Items</h4>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleAddItem}
+                        className="gap-1"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add Item
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center font-medium">
                     <span>Total</span>
                     <span>${calculateTotal(form.watch('orderDetails')).toFixed(2)}
-                    <em className="text-sm italic text-muted-foreground">(+taxes)</em>
+                      <em className="text-sm italic text-muted-foreground">(+taxes)</em>
                     </span>
                   </div>
                 </div>

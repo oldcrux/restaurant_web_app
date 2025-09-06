@@ -73,22 +73,24 @@ export function TableCards() {
     }
   };
 
-  const handleUpdateOrderStatusToDelivered = async (orderData: Order) => {
-    console.log("✅ Updating order:", orderData);
-    try {
-      await updateOrderStatusToDelivered(orderData);
-      toast.success("Order updated successfully");
-      fetchOrders();
-      setDialogOpen(false);
-      setEditOrder(undefined);
-    } catch (err) {
-      console.error(err);
-      toast.error(`Error updating order`);
-    }
-  };
+  // TODO: check if this is needed
+  // const handleUpdateOrderStatusToDelivered = async (orderData: Order) => {
+  //   console.log("✅ Updating order to Delivered:", orderData);
+  //   try {
+  //     await updateOrderStatusToDelivered(orderData);
+  //     toast.success("Order updated successfully");
+  //     fetchOrders();
+  //     setDialogOpen(false);
+  //     setEditOrder(undefined);
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error(`Error updating order`);
+  //   }
+  // };
 
   const handleRowClick = (order: Order) => {
     setViewOrder(order);
+    // setEditOrder(undefined);
   };
 
   const handleViewClose = () => {
@@ -150,7 +152,7 @@ export function TableCards() {
                         },
                         onCancel: handleCancel,
                         onStatusUpdate: handleStatusUpdate,
-                        onOrderUpdate: handleUpdateOrderStatusToDelivered,
+                        // onOrderUpdate: handleUpdateOrderStatusToDelivered,
                         onPrint: handlePrintOrder
                       }
                     }
@@ -163,7 +165,7 @@ export function TableCards() {
         }
         return column;
       });
-    }, [ordersColumns, handleCancel, handleStatusUpdate, handleUpdateOrderStatusToDelivered, handlePrintOrder]);
+    }, [ordersColumns, handleCancel, handleStatusUpdate, handlePrintOrder]);
   // }, [ordersColumns, handleCancel]);
 
   const table = useDataTableInstance({
@@ -178,7 +180,7 @@ export function TableCards() {
         },
         onCancel: handleCancel,
         onStatusUpdate: handleStatusUpdate,
-        onOrderUpdate: handleUpdateOrderStatusToDelivered,
+        // onOrderUpdate: handleUpdateOrderStatusToDelivered,
         onPrint: handlePrintOrder
       }
     });
@@ -232,17 +234,18 @@ export function TableCards() {
         open={!!viewOrder}
         onOpenChange={(open) => !open && setViewOrder(null)}
         order={viewOrder}
-        onOrderUpdate={(updatedOrder) => {
+        onOrderUpdate={() => {
           // Update the orders list with the updated order
-          setOrders(prevOrders => 
-            prevOrders.map(order => 
-              order.id === updatedOrder.id ? updatedOrder : order
-            )
-          );
-          // If the updated order is the currently viewed one, update it
-          if (viewOrder && viewOrder.id === updatedOrder.id) {
-            setViewOrder(updatedOrder);
-          }
+          // setOrders(prevOrders => 
+          //   prevOrders.map(order => 
+          //     order.id === updatedOrder.id ? updatedOrder : order
+          //   )
+          // );
+          // // If the updated order is the currently viewed one, update it
+          // if (viewOrder && viewOrder.id === updatedOrder.id) {
+          //   setViewOrder(updatedOrder);
+          // }
+          fetchOrders();
         }}
       />
     

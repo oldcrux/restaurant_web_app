@@ -233,11 +233,12 @@ export const ordersColumns: ColumnDef<Order>[] = [
           <Button
             variant={buttonConfig.variant}
             size="sm"
-            onClick={() => {
+            onClick={(e) => {
               if (buttonConfig.openDeliverDialog) {
                 setShowDeliverDialog(true);
               } else {
                 meta.onStatusUpdate?.(order, buttonConfig.nextStatus);
+                e.stopPropagation();
               }
             }}
           >
@@ -288,7 +289,10 @@ export const ordersColumns: ColumnDef<Order>[] = [
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => meta.onPrint?.(order)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  meta.onPrint?.(order);
+                }}
                 className="text-blue-600 hover:text-blue-700"
               >
                 <Printer className="w-4 h-4" />
@@ -306,7 +310,10 @@ export const ordersColumns: ColumnDef<Order>[] = [
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => meta.onEdit?.(row.original)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      meta.onEdit?.(row.original);
+                    }}
                   >
                     <Pencil className="w-4 h-4" />
                     <span className="sr-only">Edit</span>
@@ -322,7 +329,10 @@ export const ordersColumns: ColumnDef<Order>[] = [
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => meta.onCancel?.(row.original)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      meta.onCancel?.(row.original);
+                    }}
                     className="text-red-500 hover:text-red-600"
                   >
                     <Trash className="w-4 h-4" />

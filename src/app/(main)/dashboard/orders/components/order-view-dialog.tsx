@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getStatusColor } from "@/lib/utils/order-utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import { DateTime } from "luxon";
 import { Order, OrderDetails } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { updateOrderDetailStatus, updateOrderStatus } from "@/services/order-services";
+import { updateOrderDetailStatus, updateOrderStatus, updateOrderStatusToDelivered } from "@/services/order-services";
 import { toast } from "sonner";
 import { DeliverOrderDialog } from "./deliver-order-dialog";
 import { Loader2, Phone, User } from "lucide-react";
@@ -28,8 +28,17 @@ interface OrderViewDialogProps {
   onOrderUpdate?: (order: Order) => void;
 }
 
-export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: OrderViewDialogProps) {
-  if (!order) return null;
+export function OrderViewDialog({ open, onOpenChange, order: initialOrder, onOrderUpdate }: OrderViewDialogProps) {
+  const [currentOrder, setCurrentOrder] = useState<Order | null>(initialOrder);
+  const [showDeliverDialog, setShowDeliverDialog] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Update internal state when the prop changes
+  useEffect(() => {
+      setCurrentOrder(initialOrder);
+  }, [initialOrder]);
+
+  if (!currentOrder) return null;
 
   const formatDate = (dateString: string) => {
     try {
@@ -40,20 +49,18 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
     }
   };
 
-  const calculateSubtotal = (items: OrderDetails[] = []) => {
-    return items.reduce((sum, detail) => sum + (detail.itemPrice * detail.quantity), 0);
-  };
+  // const calculateSubtotal = (items: OrderDetails[] = []) => {
+  //   return items.reduce((sum, detail) => sum + (detail.itemPrice * detail.quantity), 0);
+  // };
 
-  const subtotal = calculateSubtotal(order.orderDetails);
-  const total = order.totalCost;
-  const discount = order.totalDiscount || 0;
+  // const subtotal = calculateSubtotal(currentOrder.orderDetails);
+  // const total = currentOrder.totalCost;
+  // const discount = currentOrder.totalDiscount || 0;
 
-  const [showDeliverDialog, setShowDeliverDialog] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const getStatusButtonConfig = () => {
-    if (!order?.status) return null;
-    const status = order.status.toUpperCase();
+    if (!currentOrder?.status) return null;
+    const status = currentOrder.status.toUpperCase();
     switch (status) {
       case 'CREATED':
         return { label: 'Confirm Order', nextStatus: 'CONFIRMED', variant: 'default' as const };
@@ -73,21 +80,26 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
     }
   };
 
-  const buttonConfig = getStatusButtonConfig();
+  const buttonConfig = currentOrder ? getStatusButtonConfig() : null;
 
   const handleStatusUpdate = async (nextStatus: string) => {
-    if (!order) return;
+    if (!currentOrder) return;
 
     try {
       setIsUpdating(true);
       // Create a new order object with the updated status
       const updatedOrderData = {
-        ...order,
+        ...currentOrder,
         status: nextStatus
       };
       const updatedOrder = await updateOrderStatus(updatedOrderData);
+      console.log("✅ Updated order:", updatedOrder);
       toast.success(`Order marked as ${nextStatus.toLowerCase()}`);
-      onOrderUpdate?.(updatedOrder);
+      
+      // Update the local state first for immediate feedback
+      setCurrentOrder(updatedOrder.data);
+      // Notify parent component about the update
+      onOrderUpdate?.(updatedOrder.data);
     } catch (error) {
       console.error('Error updating order status:', error);
       toast.error('Failed to update order status');
@@ -96,28 +108,42 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
     }
   };
 
-  const handleActionClick = () => {
+  const handleActionClick = async () => {
     if (!buttonConfig) return;
 
     if (buttonConfig.openDeliverDialog) {
       setShowDeliverDialog(true);
     } else {
-      handleStatusUpdate(buttonConfig.nextStatus);
+      await handleStatusUpdate(buttonConfig.nextStatus);
     }
   };
 
-  const handleDeliverComplete = (updatedOrder: Order) => {
+  const handleUpdateOrderStatusToDelivered = async (orderData: Order) => {
+      // console.log("✅ Updating order to Delivered:", orderData);
+      try {
+        await updateOrderStatusToDelivered(orderData);
+        toast.success("Order updated successfully");
+      } catch (err) {
+        console.error(err);
+        toast.error(`Error updating order`);
+      }
+    };
+    
+  const handleDeliverComplete = async (updatedOrder: Order) => {
+    // console.log("✅ Deliver complete:", updatedOrder);
+    await handleUpdateOrderStatusToDelivered(updatedOrder);
     onOrderUpdate?.(updatedOrder);
     setShowDeliverDialog(false);
+    onOpenChange(false)
   };
 
   const handleOrderDetailStatusUpdate = async (itemId: string, newStatus: string) => {
-    if (!order) return;
+    if (!currentOrder) return;
 
     try {
       setIsUpdating(true);
 
-      const orderDetail = order.orderDetails?.find(detail => detail.id === itemId);
+      const orderDetail = currentOrder.orderDetails?.find((detail: OrderDetails) => detail.id === itemId);
       if (!orderDetail) {
         throw new Error('Order detail not found');
       }
@@ -125,26 +151,28 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
       const updatedOrderDetail = {
         ...orderDetail,
         status: newStatus,
-        orderId: order.id,
-        storeName: order.storeName,
-        orgName: order.orgName
+        orderId: currentOrder.id,
+        storeName: currentOrder.storeName,
+        orgName: currentOrder.orgName
       };
 
       await updateOrderDetailStatus(updatedOrderDetail);
-      // toast.success(`Item status updated to ${newStatus.toLowerCase()}`);
 
       // Update local order details
-      let updatedDetails = order.orderDetails?.map(detail =>
+      const updatedDetails = currentOrder.orderDetails?.map((detail: OrderDetails) =>
         detail.id === itemId ? { ...detail, status: newStatus } : detail
       );
 
-      let updatedOrder = { ...order, orderDetails: updatedDetails };
+      let updatedOrder = { ...currentOrder, orderDetails: updatedDetails };
 
       // If this change makes all details DELIVERED, mark order as DELIVERED too
-      if (newStatus === 'DELIVERED' && updatedDetails?.every(d => d.status === 'DELIVERED')) {
+      if (newStatus === 'DELIVERED' && updatedDetails?.every((d: OrderDetails) => d.status === 'DELIVERED')) {
         updatedOrder = { ...updatedOrder, status: 'DELIVERED' };
       }
 
+      // Update local state first for immediate feedback
+      setCurrentOrder(updatedOrder);
+      // Notify parent component about the update
       onOrderUpdate?.(updatedOrder);
     } catch (error) {
       console.error('Error updating item status:', error);
@@ -155,25 +183,25 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
   };
 
 
-  const getStatusVariant = (status: string) => {
-    const s = status?.toUpperCase();
-    switch (s) {
-      case 'CREATED':
-        return 'secondary';
-      case 'CONFIRMED':
-        return 'default';
-      case 'PROCESSING':
-        return 'outline';
-      case 'READY':
-        return 'default';
-      case 'DELIVERED':
-        return 'default';
-      case 'CANCELLED':
-        return 'destructive';
-      default:
-        return 'outline';
-    }
-  };
+  // const getStatusVariant = (status: string) => {
+  //   const s = status?.toUpperCase();
+  //   switch (s) {
+  //     case 'CREATED':
+  //       return 'secondary';
+  //     case 'CONFIRMED':
+  //       return 'default';
+  //     case 'PROCESSING':
+  //       return 'outline';
+  //     case 'READY':
+  //       return 'default';
+  //     case 'DELIVERED':
+  //       return 'default';
+  //     case 'CANCELLED':
+  //       return 'destructive';
+  //     default:
+  //       return 'outline';
+  //   }
+  // };
 
   // Status color utility moved to @/lib/utils/order-utils
 
@@ -208,11 +236,11 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
           <div className="flex justify-between items-start">
             <div>
               <DialogTitle className="text-2xl font-bold flex items-center gap-3">
-                Order #{order.orderNumber || 'N/A'}
+                Order #{currentOrder.orderNumber || 'N/A'}
 
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-sm bg-muted/20">
-                    {order.storeName}
+                    {currentOrder.storeName}
                   </Badge>
                 </div>
               </DialogTitle>
@@ -220,14 +248,14 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
                 <Badge
                   variant="outline"
                   className={cn(
-                    getStatusColor(order.status),
+                    getStatusColor(currentOrder.status),
                     "text-xs font-medium py-1 px-2 border-0 capitalize"
                   )}
                 >
-                  {order.status?.toLowerCase() || 'N/A'}
+                  {currentOrder.status?.toLowerCase() || 'N/A'}
                 </Badge>
                 <span className="text-sm text-muted-foreground">
-                  {formatDate(order.createdAt || '')}
+                  {formatDate(currentOrder.createdAt || '')}
                 </span>
               </div>
             </div>
@@ -243,17 +271,17 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                  <span className="font-medium">{order.customerName || 'Guest'}</span>
+                  <span className="font-medium">{currentOrder.customerName || 'Guest'}</span>
                 </div>
-                {order.customerPhoneNumber && (
+                {currentOrder.customerPhoneNumber && (
                   <div className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                     <a
-                      href={`tel:${order.customerPhoneNumber}`}
+                      href={`tel:${currentOrder.customerPhoneNumber}`}
                       className="text-sm text-muted-foreground hover:underline hover:text-foreground transition-colors"
-                      aria-label={`Call ${order.customerPhoneNumber}`}
+                      aria-label={`Call ${currentOrder.customerPhoneNumber}`}
                     >
-                      {order.customerPhoneNumber}
+                      {currentOrder.customerPhoneNumber}
                     </a>
                   </div>
                 )}
@@ -264,8 +292,8 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
             <div>
               <h3 className="font-medium mb-2">Order Items</h3>
               <div className="space-y-4">
-                {order.orderDetails?.map((detail: OrderDetails, index: number) => {
-                  const nextStatus = getNextStatus(detail.status, order.status);
+                {(currentOrder.orderDetails || []).map((detail: OrderDetails, index: number) => {
+                  const nextStatus = getNextStatus(detail.status, currentOrder.status);
                   return (
                     <div key={detail.id}>
                       <div className="flex justify-between items-start gap-4 pb-2">
@@ -309,7 +337,7 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
                       </div>
 
                       {/* Light line separator except after last item */}
-                      {index < (order?.orderDetails?.length || 0 - 1) && (
+                      {index < (currentOrder?.orderDetails?.length || 0 - 1) && (
                         <Separator className="bg-muted-foreground/10" />
                       )}
                     </div>
@@ -339,11 +367,11 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
             </div> */}
 
             {/* Additional Information */}
-            {order.notes && (
+            {currentOrder.notes && (
               <div className="space-y-2">
                 <div>
                   <h4 className="text-sm font-medium">Order Notes</h4>
-                  <p className="text-sm text-muted-foreground">{order.notes}</p>
+                  <p className="text-sm text-muted-foreground">{currentOrder.notes}</p>
                 </div>
               </div>
             )}
@@ -384,7 +412,7 @@ export function OrderViewDialog({ open, onOpenChange, order, onOrderUpdate }: Or
           <DeliverOrderDialog
             open={showDeliverDialog}
             onOpenChange={setShowDeliverDialog}
-            order={order}
+            order={currentOrder}
             onDeliver={handleDeliverComplete}
           />
         )}
