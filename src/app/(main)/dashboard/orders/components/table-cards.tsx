@@ -171,7 +171,7 @@ export function TableCards() {
   const table = useDataTableInstance({
       data: orders,
       columns: columnsWithHandlers,
-      getRowId: (row) => row.orderNumber?.toString(),
+      getRowId: (row, index) => `order-${row.id || row.orderNumber}-${index}`,
       meta: {
         hideStoreColumn: !!storeName, // Hide store column if storeName is set (user is logged into a specific store)
         onEdit: (order: Order) => {
@@ -215,7 +215,7 @@ export function TableCards() {
                 <DataTable 
                   table={table} 
                   columns={ordersColumns}
-                  onRowClick={handleRowClick} // TODO: implement row click
+                  onRowClick={handleRowClick}
                   rowClassName="hover:bg-muted/50"
                 />
               </div>

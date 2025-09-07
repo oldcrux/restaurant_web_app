@@ -36,7 +36,7 @@ export const ordersColumns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: "orderNumber",
-    header: "Order #",
+    header: () => <div className="text-center w-full">Order #</div>,
     cell: ({ row }) => {
       const order = row.original;
       return (
@@ -84,7 +84,7 @@ export const ordersColumns: ColumnDef<Order>[] = [
       return (
         <div className="text-center w-full space-y-1">
           {orderDetails.map((detail, index) => (
-            <div key={index} className="text-sm">
+            <div key={`${detail.item}-${index}`} className="text-sm">
               <span className="font-medium">{detail.item}</span>
               <span className="text-muted-foreground"> × {detail.quantity}</span>
               {detail.notes && (
@@ -268,7 +268,7 @@ export const ordersColumns: ColumnDef<Order>[] = [
     cell: ({ row, table }) => {
       const storeName = row.getValue("storeName");
       const hideStoreColumn = (table.options.meta as any)?.hideStoreColumn;
-      return hideStoreColumn ? null : <div className="text-center w-full">{!storeName}</div>;
+      return hideStoreColumn ? null : <div className="text-center w-full">{String(storeName || '')}</div>;
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
