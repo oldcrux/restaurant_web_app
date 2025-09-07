@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { toast } from "sonner";
@@ -21,15 +21,42 @@ const FormSchema = z.object({
 
 export function EmailPasswordForm() {
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Initialize form with default values
+  const defaultValues = {
+    email: "",
+    password: "",
+    remember: false,
+  };
+  
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      remember: false,
-    },
+    defaultValues,
   });
+
+  // Set isClient to true after component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Only render the form on the client side
+  if (!isClient) {
+    return (
+      <div className="w-full">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="h-9 bg-muted/50 rounded-md animate-pulse"></div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-9 bg-muted/50 rounded-md animate-pulse"></div>
+          </div>
+          <div className="h-9 bg-muted/50 rounded-md animate-pulse w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
   
   const { setError } = form;
 
@@ -114,7 +141,7 @@ export function EmailPasswordForm() {
                   id="email" 
                   type="email" 
                   placeholder="you@example.com" 
-                  autoComplete="email" 
+                  autoComplete="email"
                   disabled={isSubmitting}
                   {...field} 
                 />
@@ -143,7 +170,7 @@ export function EmailPasswordForm() {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="remember"
           render={({ field }) => (
@@ -161,7 +188,7 @@ export function EmailPasswordForm() {
               </FormLabel>
             </FormItem>
           )}
-        />
+        /> */}
         <div className="flex flex-col space-y-4">
           <Button 
             type="submit"

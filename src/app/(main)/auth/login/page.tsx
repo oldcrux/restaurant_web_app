@@ -1,11 +1,21 @@
 "use client"
+import { useState, useEffect } from "react";
 import { APP_CONFIG } from "@/config/app-config";
 import { EmailPasswordForm } from "../components/email-password";
 import { GoogleLoginButton } from "@/components/social-button/google-button";
 import { FacebookLoginButton } from "@/components/social-button/facebook-button";
 
 export default function Login() {
-  const registerHref = process.env.NEXT_PUBLIC_WEBSITE+"/register" || "#";
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null; // Or a loading spinner
+  }
+  const registerHref = (process.env.NEXT_PUBLIC_WEBSITE || '') + "/register";
 
   return (
     <>
