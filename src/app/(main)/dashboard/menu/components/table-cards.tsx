@@ -101,7 +101,7 @@ export function TableCards() {
     if (!menuToDelete) return;
     
     try {
-      await deleteMenuItem(menuToDelete.itemName);
+      await deleteMenuItem(menuToDelete.itemName, menuToDelete.storeName || "");
       toast.success("Menu item deleted successfully");
       setDeleteDialogOpen(false);
       fetchMenus();

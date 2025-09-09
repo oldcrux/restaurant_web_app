@@ -78,14 +78,27 @@ export async function updateMenuItem(menu: MenuItem) {
     return response.data;
 }
 
-export async function deleteMenuItem(menuItemName: string) {
+export async function deleteMenuItem(menuItemName: string, storeName: string) {
     const accessTokenPayload = await getAccessTokenPayload();
 
     const orgName = accessTokenPayload?.user.organization.orgName;
-    const storeName = accessTokenPayload?.user.currentStore;
+    // const storeName = accessTokenPayload?.user.currentStore;
 
-    const queryParams = `orgName=${orgName}&storeName=${storeName}`;
-    console.log(`menu item name ${menuItemName}`)
+    let queryParams = '';
+    if(accessTokenPayload?.user.permissions.includes("org_admin")) {
+        queryParams = `orgName=${orgName}`;
+    }
+    else {
+        // if user is not org admin, check if user has menu_write permission on that store. If yes, user can delete menu item on his store.
+        accessTokenPayload?.user.storeRoles.forEach((storeRole: any) => {
+            if(storeRole.storeName === storeName) {
+                if(storeRole.permissions.includes("menu_write")) {
+                    queryParams = `orgName=${orgName}&storeName=${storeName}`;
+                }
+            }
+        })        
+    }
+    console.log(`query params: ${queryParams}`);
     const response = await axios.post(`${nodeServerUrl}/api/menu-items/delete/${menuItemName}?${queryParams}`, {
         headers: {
             'Content-Type': 'application/json',
