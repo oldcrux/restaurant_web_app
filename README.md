@@ -45,6 +45,12 @@ Components:
 - Appointment booking lifecycle.
 - Secure API access for bot users.  
 
+### watch order lifecycle
+[Order Lifecycle](https://youtu.be/7WvWq5NbZJs)
+
+### watch appointment lifecycle
+[Appointment Lifecycle](https://youtu.be/0Zo49_BSgT4)
+
 ## Application Setup and Execution
 
 ### Prerequisite
